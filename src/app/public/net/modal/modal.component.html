@@ -27,18 +27,20 @@
     <tr>
       <th scope="col">Nº Redes</th>
       <th scope="col">Nº Hosts</th>
+      <th scope="col"></th>
     </tr>
     </thead>
     <tbody>
     <tr *ngFor="let net of guessNets; index as i">
       <td>{{ net.total | number }}</td>
       <td>{{ net.hosts | number }}</td>
+      <td><button (click)="delteNet(i)" class="btn btn-danger"><fa-icon [icon]="faTrash"></fa-icon></button></td>
     </tr>
     </tbody>
   </table>
 
 </div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-danger" (click)="closeModal()">Cancelar</button>
+  <button *ngIf="edit" type="button" class="btn btn-danger" (click)="closeModal()">Cancelar</button>
   <button type="button" class="btn btn-success" (click)="closeModal(true)">Guardar</button>
 </div>

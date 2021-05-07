@@ -1,8 +1,10 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {GuessNet} from '../../../models/guess-net';
 import {FormBuilder, Validators} from '@angular/forms';
-import {faPlus} from '@fortawesome/free-solid-svg-icons';
+import {faPlus, faTrash} from '@fortawesome/free-solid-svg-icons';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+import {SnotifyPosition, SnotifyService, SnotifyStyle} from 'ng-snotify';
+import {SnotifyToastConfig} from 'ng-snotify/lib/interfaces/snotify-toast-config.interface';
 
 @Component({
   selector: 'app-modal',
@@ -12,8 +14,19 @@ import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 export class ModalComponent {
 
   faPlus = faPlus;
+  faTrash = faTrash;
+
+  snotifyConfig: SnotifyToastConfig = {
+    timeout: 2000,
+    showProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    position: SnotifyPosition.rightTop,
+    type: SnotifyStyle.error
+  };
 
   @Input() guessNets: GuessNet[];
+  @Input() edit = false;
   submitted = false;
 
   netForm = this.formBuilder.group({
@@ -22,7 +35,8 @@ export class ModalComponent {
   });
 
   constructor(private formBuilder: FormBuilder,
-              private activeModal: NgbActiveModal) {
+              private activeModal: NgbActiveModal,
+              private snotifyService: SnotifyService) {
   }
 
   submit(): void {
@@ -49,12 +63,21 @@ export class ModalComponent {
 
   closeModal(send?: boolean): void {
     if (send) {
-      console.log("tou aiqui");
-      this.activeModal.close(this.guessNets);
+      if (this.guessNets.length > 0) {
+        this.activeModal.close(this.guessNets);
+      } else {
+        this.snotifyService.create({
+          title: 'Error',
+          body: 'Debe agregar alguna red',
+          config: this.snotifyConfig
+        });
+      }
     } else {
-      console.log("porco");
       this.activeModal.close();
     }
   }
 
+  delteNet(index): void {
+    this.guessNets.splice(index, 1);
+  }
 }
