@@ -27,6 +27,7 @@ export class ModalComponent {
 
   @Input() guessNets: GuessNet[];
   @Input() edit = false;
+  @Input() onlyView = false;
   submitted = false;
 
   netForm = this.formBuilder.group({

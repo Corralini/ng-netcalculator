@@ -1,40 +1,50 @@
 <div class="modal-header">
-  <h4 class="modal-title" id="modal-basic-title">Añadir redes</h4>
+  <h4 *ngIf="!onlyView" class="modal-title" id="modal-add-title">Añadir redes</h4>
+  <h4 *ngIf="onlyView" class="modal-title" id="modal-see-title">Redes Agregadas</h4>
 </div>
 <div class="modal-body">
-  <form [formGroup]="netForm" (ngSubmit)="submit()">
-    <div class="row">
-      <div class="col">
-        <label>
-          <input type="number" formControlName="numRed" class="form-control" placeholder="Nº Redes">
-        </label>
+  <div *ngIf="!onlyView">
+    <form [formGroup]="netForm" (ngSubmit)="submit()">
+      <div class="row">
+        <div class="col">
+          <label>
+            <input type="number" formControlName="numRed" class="form-control" placeholder="Nº Redes">
+          </label>
+        </div>
+        <div class="col">
+          <label>
+            <input type="number" formControlName="numHosts" class="form-control" placeholder="Nº Hosts">
+          </label>
+        </div>
+        <div class="col">
+          <button type="submit" class="btn btn-primary" [disabled]="!netForm.valid">
+            <fa-icon [icon]="faPlus"></fa-icon>
+          </button>
+        </div>
       </div>
-      <div class="col">
-        <label>
-          <input type="number" formControlName="numHosts" class="form-control" placeholder="Nº Hosts">
-        </label>
-      </div>
-      <div class="col">
-        <button type="submit" class="btn btn-primary" [disabled]="!netForm.valid"><fa-icon [icon]="faPlus"></fa-icon></button>
-      </div>
-    </div>
-  </form>
+    </form>
 
-  <br>
+    <br>
+
+  </div>
 
   <table class="table table-striped">
     <thead>
     <tr>
       <th scope="col">Nº Redes</th>
       <th scope="col">Nº Hosts</th>
-      <th scope="col"></th>
+      <th *ngIf="!onlyView" scope="col"></th>
     </tr>
     </thead>
     <tbody>
     <tr *ngFor="let net of guessNets; index as i">
       <td>{{ net.total | number }}</td>
       <td>{{ net.hosts | number }}</td>
-      <td><button (click)="delteNet(i)" class="btn btn-danger"><fa-icon [icon]="faTrash"></fa-icon></button></td>
+      <td *ngIf="!onlyView">
+        <button (click)="delteNet(i)" class="btn btn-danger">
+          <fa-icon [icon]="faTrash"></fa-icon>
+        </button>
+      </td>
     </tr>
     </tbody>
   </table>
@@ -42,5 +52,6 @@
 </div>
 <div class="modal-footer">
   <button *ngIf="edit" type="button" class="btn btn-danger" (click)="closeModal()">Cancelar</button>
-  <button type="button" class="btn btn-success" (click)="closeModal(true)">Guardar</button>
+  <button *ngIf="!onlyView" type="button" class="btn btn-success" (click)="closeModal(true)">Guardar</button>
+  <button *ngIf="onlyView" type="button" class="btn btn-success" (click)="closeModal()">Cerrar</button>
 </div>

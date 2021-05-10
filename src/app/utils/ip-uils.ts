@@ -1,5 +1,5 @@
 import {Net} from '../models/net';
-import {binaryToDecimal} from './binary-utils';
+import {binaryToDecimal, decimalToBinary} from './binary-utils';
 import {arrayToString} from './array-utils';
 
 export const typeA = 'A';
@@ -101,9 +101,9 @@ export function getIpType(ip: string): string {
   }
 }
 
-export function generateSubIp(parseIp: string, parseMask: number, first = true): Net {
+export function generateSubIp(parseIp: string, parseMask: number): Net {
   if (parseMask <= 30) {
-    const net = {
+    const net: Net = {
       ip: parseIp,
       mask: parseMask,
       used: false,
@@ -111,29 +111,27 @@ export function generateSubIp(parseIp: string, parseMask: number, first = true):
     };
     console.log('ip:', parseIp, 'mask:', parseMask);
     if (parseMask >= 24) {
+      net.broadcast = calculateBroadcast(parseIp, parseMask);
       const netBytes = parseMask - 24;
       const staticPartIp = parseIp.split('.');
-      let binary = parseInt(staticPartIp[3], 10).toString(2);
-      binary = '0'.repeat(8 - binary.length) + binary;
+      const binary = decimalToBinary(parseInt(staticPartIp[3], 10), 8);
       console.log(binary);
       staticPartIp[staticPartIp.length - 1] = binaryToDecimal(binary).toString();
       const firstIp = staticPartIp[0] + '.' + staticPartIp[1] + '.' + staticPartIp[2] + '.' + staticPartIp[3];
       console.log('firstIp', firstIp);
-      const firstNet = generateSubIp(firstIp, parseMask + 1, false);
+      const firstNet = generateSubIp(firstIp, parseMask + 1);
       if (firstNet) {
-        net.childs.push(generateSubIp(firstIp, parseMask + 1, false));
+        net.childs.push(generateSubIp(firstIp, parseMask + 1));
       }
-      if (!first) {
-        const secondBinary = [...binary];
-        secondBinary[parseMask - 24 - 1] = '1';
+      const secondBinary = [...binary];
+      secondBinary[parseMask - 24 - 1] = '1';
 
-        staticPartIp[staticPartIp.length - 1] = binaryToDecimal(arrayToString(secondBinary)).toString();
-        const secondIp = staticPartIp[0] + '.' + staticPartIp[1] + '.' + staticPartIp[2] + '.' + staticPartIp[3];
-        console.log('secondIP', secondIp);
-        const secondNet = generateSubIp(secondIp, parseMask + 1, false);
-        if (secondNet) {
-          net.childs.push(generateSubIp(secondIp, parseMask + 1, false));
-        }
+      staticPartIp[staticPartIp.length - 1] = binaryToDecimal(arrayToString(secondBinary)).toString();
+      const secondIp = staticPartIp[0] + '.' + staticPartIp[1] + '.' + staticPartIp[2] + '.' + staticPartIp[3];
+      console.log('secondIP', secondIp);
+      const secondNet = generateSubIp(secondIp, parseMask + 1);
+      if (secondNet) {
+        net.childs.push(generateSubIp(secondIp, parseMask + 1));
       }
 
     } else if (parseMask >= 16 && parseMask < 24) {
@@ -148,4 +146,22 @@ export function generateSubIp(parseIp: string, parseMask: number, first = true):
     return net;
   }
   return undefined;
+}
+
+export function calculateBroadcast(ip: string, mask: number): string {
+  const type = getIpType(ip);
+  let broadcast: string;
+  if (type === typeC) {
+    let changePart = [...decimalToBinary(parseInt(ip.split('.')[3], 10), 8)];
+    const hostPart = 32 - mask;
+    changePart = changePart.filter((value, index) => {
+      return index > 8 - hostPart;
+    });
+    console.log('Quitar 0', changePart);
+    broadcast = arrayToString(changePart) + '1'.repeat(8 - changePart.length);
+    console.log('add 1', broadcast);
+    broadcast = binaryToDecimal(broadcast).toString();
+    console.log('decimal', broadcast);
+  }
+  return broadcast;
 }

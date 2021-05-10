@@ -7,13 +7,15 @@ import {NgbButtonsModule} from '@ng-bootstrap/ng-bootstrap';
 import {ReactiveFormsModule} from '@angular/forms';
 import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 import {SnotifyModule} from 'ng-snotify';
+import { SchemaComponent } from './net/schema/schema.component';
 
 
 @NgModule({
   declarations: [
     PublicComponent,
     NetComponent,
-    ModalComponent
+    ModalComponent,
+    SchemaComponent
   ],
   exports: [
     PublicComponent

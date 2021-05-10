@@ -26,10 +26,11 @@ export class NetComponent implements OnInit {
     this.getNets();
   }
 
-  getNets(edit = false): void {
+  getNets(edit = false, onlyView: boolean = false): void {
     const modalRef = this.modalService.open(ModalComponent, {backdrop: 'static', keyboard: false, centered: true});
     modalRef.componentInstance.guessNets = [...this.guessNets];
     modalRef.componentInstance.edit = edit;
+    modalRef.componentInstance.onlyView = onlyView;
     modalRef.result.then(resuult => {
       if (resuult) {
         this.guessNets = resuult;
