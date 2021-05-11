@@ -1,0 +1,72 @@
+<div class="modal-header">
+  <h4 class="modal-title" id="modal-add-title">Selecciona una red</h4>
+  <button type="button" class="close" aria-label="Close" (click)="close()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<div class="modal-body">
+  <div *ngIf="!selectGuessNet">
+    <div *ngIf="guessNets else noNets">
+
+      <table class="table table-striped">
+        <thead>
+        <tr>
+          <th scope="col">Nº Redes</th>
+          <th scope="col">Nº Hosts</th>
+          <th scope="col"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let net of guessNets">
+          <td>{{ net.total | number }}</td>
+          <td>{{ net.hosts | number }}</td>
+          <td>
+            <button *ngIf="net.total > 0" (click)="setSelectGuessNet(net)" class="btn btn-success">
+              <fa-icon [icon]="faCheck"></fa-icon>
+            </button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div *ngIf="selectGuessNet">
+    <div (click)="back()">
+      <fa-icon [icon]="faBack"></fa-icon>
+      Back
+    </div>
+    <div *ngIf="avaliableNets else noNets">
+
+      <table class="table table-striped">
+        <thead>
+        <tr>
+          <th scope="col">IP</th>
+          <th scope="col">Decimal Mask</th>
+          <th scope="col"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let avalNet of avaliableNets">
+          <td>{{ avalNet.ip}}</td>
+          <td>{{ avalNet.decimalMask}}</td>
+          <td>
+            <button (click)="setSelectNet(avalNet)" class="btn btn-success">
+              <fa-icon [icon]="faCheck"></fa-icon>
+            </button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="modal-footer">
+  <button *ngIf="selectNet" (click)="close(true)" class="btn btn-success" type="button">Confirmar</button>
+</div>
+
+<ng-template #noNets>
+  <h4>No hay redes para seleccionar</h4>
+</ng-template>

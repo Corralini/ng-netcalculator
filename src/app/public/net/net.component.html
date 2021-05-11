@@ -2,7 +2,5 @@
   <button (click)="getNets(false, true)" class="btn btn-primary">Ver redes</button>
   <button (click)="getNets(true)" class="btn btn-primary">Editar redes</button>
   <br>
-  {{guessNets | json}}
-  <br>
-  <app-schema [guessNet]="guessNets" [nets]="net"></app-schema>
+  <app-schema *ngIf="show" [guessNet]="guessNets" [nets]="net"></app-schema>
 </div>

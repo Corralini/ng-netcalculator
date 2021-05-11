@@ -1,1 +1,29 @@
-<button class="btn btn-primary">add router</button>
+<div>
+  <ngb-accordion [closeOthers]="true">
+    <ngb-panel *ngFor="let router of routers" id="static-1">
+      <ng-template ngbPanelTitle>
+        <span>{{router.nombre}}</span>
+      </ng-template>
+      <ng-template ngbPanelContent>
+        <div class="d-flex justify-content-end">
+          <button (click)="selectNet(router, true)" class="btn btn-primary mr-3">Add router</button>
+          <button (click)="selectNet(router)" class="btn btn-primary">Add net</button>
+        </div>
+        <div>
+          <ngb-accordion [closeOthers]="true">
+            <ngb-panel *ngFor="let interfaz of router.interfaces">
+              <ng-template ngbPanelTitle>
+                <span>{{interfaz.nombre}}</span>
+              </ng-template>
+              <ng-template ngbPanelContent>
+                <div>
+                  {{interfaz.show}}
+                </div>
+              </ng-template>
+            </ngb-panel>
+          </ngb-accordion>
+        </div>
+      </ng-template>
+    </ngb-panel>
+  </ngb-accordion>
+</div>

@@ -6,23 +6,8 @@ export const typeA = 'A';
 export const typeB = 'B';
 export const typeC = 'C';
 
-export function generateStates(lenght: number, max: number, broadcast: boolean = false): string [] {
-  const states: string[] = [];
-
-  const maxDecimal = parseInt('1'.repeat(lenght - 1), 2);
-  if (maxDecimal) {
-    for (let i = 0; i <= maxDecimal; i++) {
-      // Convert to binary, pad with 0, and add to final results
-      states.push(i.toString(2).padStart(lenght - 1, '0') + (broadcast ? '1' : '0').repeat(max - lenght + 1));
-    }
-  } else {
-    states.push((broadcast ? '1' : '0').repeat(max));
-  }
-
-
-  return states;
-
-}
+let searchNets: Net[] = [];
+let usedNets: Net[] = [];
 
 export function calculateNextIp(ip: string): string {
   const ipSplitted = ip.split('.');
@@ -109,7 +94,6 @@ export function generateSubIp(parseIp: string, parseMask: number): Net {
       used: false,
       childs: []
     };
-    console.log('ip:', parseIp, 'mask:', parseMask);
     net.broadcast = calculateBroadcast(parseIp, parseMask);
     net.ipRouter = calculateNextIp(parseIp);
     net.firstIp = calculateNextIp(net.ipRouter);
@@ -165,4 +149,56 @@ export function calculateDecimalMask(mask: number): string {
   const binary = '1'.repeat(mask) + '0'.repeat(32 - mask);
   return binaryToDecimal(binary.slice(0, 8)) + '.' + binaryToDecimal(binary.slice(8, 16))
     + '.' + binaryToDecimal(binary.slice(16, 24)) + '.' + binaryToDecimal(binary.slice(24, 32));
+}
+
+export function getNetsByMask(net: Net, searchMask: number, first = true): void {
+  if (first) {
+    searchNets = [];
+  }
+
+  const used = !!usedNets.find(value => value.ip === net.ip);
+
+  if (net.mask !== searchMask) {
+    net.childs.forEach(child => getNetsByMask(child, searchMask, false));
+  } else {
+    if (!used) {
+      searchNets.push(net);
+    }
+  }
+}
+
+export function getSearchNets(): Net[] {
+  return [...searchNets];
+}
+
+export function setNetUsed(net: Net, ip: string, used = true, first = true): void {
+  if (first) {
+    usedNets = [];
+  }
+
+  if (used) {
+    if (net.ip !== ip) {
+      net.childs.forEach(child => setNetUsed(child, ip, used, false));
+    } else {
+      usedNets.push(net);
+    }
+  } else {
+    usedNets = usedNets.filter(value => value.ip !== ip);
+  }
+
+}
+
+export function getUsedNets(): Net[] {
+  return [...usedNets];
+}
+
+
+export function getOptimizedMask(numHosts: number): number {
+  let countByteHosts = 0;
+  let pow = Math.pow(2, countByteHosts) - 2;
+  while (pow <= numHosts) {
+    countByteHosts++;
+    pow = Math.pow(2, countByteHosts) - 2;
+  }
+  return 32 - countByteHosts;
 }

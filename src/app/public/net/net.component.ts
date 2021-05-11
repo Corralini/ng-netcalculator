@@ -18,6 +18,7 @@ export class NetComponent implements OnInit {
   maskDecimal: number;
   ipType: string;
   net: Net;
+  show = false;
 
   constructor(private modalService: NgbModal) {
   }
@@ -27,15 +28,19 @@ export class NetComponent implements OnInit {
   }
 
   getNets(edit = false, onlyView: boolean = false): void {
+    this.show = false;
     const modalRef = this.modalService.open(ModalComponent, {backdrop: 'static', keyboard: false, centered: true});
     modalRef.componentInstance.guessNets = [...this.guessNets];
     modalRef.componentInstance.edit = edit;
     modalRef.componentInstance.onlyView = onlyView;
     modalRef.result.then(resuult => {
       if (resuult) {
+        this.show = false;
+        this.guessNets = [];
         this.guessNets = resuult;
         this.calculateIp();
       }
+      this.show = true;
     });
   }
 
@@ -61,12 +66,8 @@ export class NetComponent implements OnInit {
     this.maskDecimal = 32 - countByteHosts;
 
     console.log('ip:', this.ipDecimal, 'mask:', this.maskDecimal);
-    this.netSplit();
-  }
-
-  netSplit(): void {
     this.net = generateSubIp(this.ipDecimal, this.maskDecimal);
-    console.log(this.net);
+
   }
 
 }
