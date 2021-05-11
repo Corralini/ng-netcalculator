@@ -1,8 +1,8 @@
 <div *ngIf="guessNets && guessNets.length > 0">
-  <button class="btn btn-primary" (click)="getNets(false, true)">Ver redes</button>
-  <button class="btn btn-primary" (click)="getNets(true)">Editar redes</button>
+  <button (click)="getNets(false, true)" class="btn btn-primary">Ver redes</button>
+  <button (click)="getNets(true)" class="btn btn-primary">Editar redes</button>
   <br>
   {{guessNets | json}}
   <br>
-  <app-schema [nets]="net" [guessNet]="guessNets"></app-schema>
+  <app-schema [guessNet]="guessNets" [nets]="net"></app-schema>
 </div>

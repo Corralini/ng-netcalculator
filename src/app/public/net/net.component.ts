@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {ModalComponent} from './modal/modal.component';
-import {GuessNet} from '../../models/guess-net';
-import {Net} from 'src/app/models/net';
+import {GuessNet} from '../../models/guess-net.model';
+import {Net} from 'src/app/models/net.model';
 import {generateSubIp, typeA, typeB, typeC} from '../../utils/ip-uils';
 
 @Component({

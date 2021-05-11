@@ -1,5 +1,5 @@
 import {Component, Input} from '@angular/core';
-import {GuessNet} from '../../../models/guess-net';
+import {GuessNet} from '../../../models/guess-net.model';
 import {FormBuilder, Validators} from '@angular/forms';
 import {faPlus, faTrash} from '@fortawesome/free-solid-svg-icons';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';

@@ -4,20 +4,20 @@
 </div>
 <div class="modal-body">
   <div *ngIf="!onlyView">
-    <form [formGroup]="netForm" (ngSubmit)="submit()">
+    <form (ngSubmit)="submit()" [formGroup]="netForm">
       <div class="row">
         <div class="col">
           <label>
-            <input type="number" formControlName="numRed" class="form-control" placeholder="Nº Redes">
+            <input class="form-control" formControlName="numRed" placeholder="Nº Redes" type="number">
           </label>
         </div>
         <div class="col">
           <label>
-            <input type="number" formControlName="numHosts" class="form-control" placeholder="Nº Hosts">
+            <input class="form-control" formControlName="numHosts" placeholder="Nº Hosts" type="number">
           </label>
         </div>
         <div class="col">
-          <button type="submit" class="btn btn-primary" [disabled]="!netForm.valid">
+          <button [disabled]="!netForm.valid" class="btn btn-primary" type="submit">
             <fa-icon [icon]="faPlus"></fa-icon>
           </button>
         </div>
@@ -51,7 +51,7 @@
 
 </div>
 <div class="modal-footer">
-  <button *ngIf="edit" type="button" class="btn btn-danger" (click)="closeModal()">Cancelar</button>
-  <button *ngIf="!onlyView" type="button" class="btn btn-success" (click)="closeModal(true)">Guardar</button>
-  <button *ngIf="onlyView" type="button" class="btn btn-success" (click)="closeModal()">Cerrar</button>
+  <button (click)="closeModal()" *ngIf="edit" class="btn btn-danger" type="button">Cancelar</button>
+  <button (click)="closeModal(true)" *ngIf="!onlyView" class="btn btn-success" type="button">Guardar</button>
+  <button (click)="closeModal()" *ngIf="onlyView" class="btn btn-success" type="button">Cerrar</button>
 </div>

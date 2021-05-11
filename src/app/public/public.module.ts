@@ -6,8 +6,7 @@ import {ModalComponent} from './net/modal/modal.component';
 import {NgbButtonsModule} from '@ng-bootstrap/ng-bootstrap';
 import {ReactiveFormsModule} from '@angular/forms';
 import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
-import {SnotifyModule} from 'ng-snotify';
-import { SchemaComponent } from './net/schema/schema.component';
+import {SchemaComponent} from './net/schema/schema.component';
 
 
 @NgModule({

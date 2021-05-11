@@ -1,4 +1,4 @@
-import {Net} from '../models/net';
+import {Net} from '../models/net.model';
 import {binaryToDecimal, decimalToBinary} from './binary-utils';
 import {arrayToString} from './array-utils';
 
@@ -110,9 +110,12 @@ export function generateSubIp(parseIp: string, parseMask: number): Net {
       childs: []
     };
     console.log('ip:', parseIp, 'mask:', parseMask);
+    net.broadcast = calculateBroadcast(parseIp, parseMask);
+    net.ipRouter = calculateNextIp(parseIp);
+    net.firstIp = calculateNextIp(net.ipRouter);
+    net.lastIp = calculatePreviousIp(net.broadcast);
+    net.decimalMask = calculateDecimalMask(parseMask);
     if (parseMask >= 24) {
-      net.broadcast = calculateBroadcast(parseIp, parseMask);
-      const netBytes = parseMask - 24;
       const staticPartIp = parseIp.split('.');
       const binary = decimalToBinary(parseInt(staticPartIp[3], 10), 8);
       staticPartIp[staticPartIp.length - 1] = binaryToDecimal(binary).toString();
@@ -156,4 +159,10 @@ export function calculateBroadcast(ip: string, mask: number): string {
       + binaryToDecimal(arrayToString(changePart) + '1'.repeat(8 - changePart.length)).toString();
   }
   return broadcast;
+}
+
+export function calculateDecimalMask(mask: number): string {
+  const binary = '1'.repeat(mask) + '0'.repeat(32 - mask);
+  return binaryToDecimal(binary.slice(0, 8)) + '.' + binaryToDecimal(binary.slice(8, 16))
+    + '.' + binaryToDecimal(binary.slice(16, 24)) + '.' + binaryToDecimal(binary.slice(24, 32));
 }

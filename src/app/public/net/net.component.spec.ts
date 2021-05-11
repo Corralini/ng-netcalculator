@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { NetComponent } from './net.component';
+import {NetComponent} from './net.component';
 
 describe('NetComponent', () => {
   let component: NetComponent;
@@ -8,9 +8,9 @@ describe('NetComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ NetComponent ]
+      declarations: [NetComponent]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

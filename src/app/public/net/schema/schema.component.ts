@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Net} from '../../../models/net';
-import {GuessNet} from '../../../models/guess-net';
+import {Net} from '../../../models/net.model';
+import {GuessNet} from '../../../models/guess-net.model';
 
 @Component({
   selector: 'app-schema',
@@ -14,7 +14,9 @@ export class SchemaComponent implements OnInit {
   letras = [...'abcdefghijklmnopkrstuwxyz'];
   idxLetters = 0;
   idxNet = 1;
-  constructor() { }
+
+  constructor() {
+  }
 
   ngOnInit(): void {
   }
