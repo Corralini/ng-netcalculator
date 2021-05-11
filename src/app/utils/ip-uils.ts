@@ -122,7 +122,7 @@ export function generateSubIp(parseIp: string, parseMask: number): Net {
         net.childs.push(firstNet);
       }
       const secondBinary = [...binary];
-      secondBinary[parseMask - 24 - 1] = '1';
+      secondBinary[parseMask - 24] = '1';
 
       staticPartIp[staticPartIp.length - 1] = binaryToDecimal(arrayToString(secondBinary)).toString();
       const secondIp = staticPartIp[0] + '.' + staticPartIp[1] + '.' + staticPartIp[2] + '.' + staticPartIp[3];
