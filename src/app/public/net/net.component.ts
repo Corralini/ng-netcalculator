@@ -35,7 +35,6 @@ export class NetComponent implements OnInit {
     modalRef.componentInstance.onlyView = onlyView;
     modalRef.result.then(resuult => {
       if (resuult) {
-        this.show = false;
         this.guessNets = [];
         this.guessNets = resuult;
         this.calculateIp();

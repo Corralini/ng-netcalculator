@@ -5,6 +5,8 @@ import {Router} from '../../../models/router.model';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {ModalComponent} from '../modal/modal.component';
 import {SelectNetModalComponent} from './select-net-modal/select-net-modal.component';
+import {Interface, INTERFAZ_BASE_NAME} from '../../../models/interfaz.model';
+import {calculateNextIp} from '../../../utils/ip-uils';
 
 @Component({
   selector: 'app-schema',
@@ -39,20 +41,46 @@ export class SchemaComponent implements OnInit{
   createFirstRouter(): void {
     this.workGuessNet = [...this.guessNet];
     this.workNets = this.nets;
-    this.routers.push({
-      nombre: 'Router ' + this.getLetter(),
+    this.generateRouter();
+  }
+
+  generateRouter(): Router {
+    const router: Router = {
+      nombre: 'Router ' + this.getLetter().toUpperCase(),
       interfaces: []
+    };
+    this.routers.push(router);
+    return router;
+  }
+
+  addRouter(router: Router, interfaz?: Interface): void {
+    const newRouter = this.generateRouter();
+    this.selectedNet.firstIp = calculateNextIp(this.selectedNet.firstIp);
+    let newNet: Net;
+    if (interfaz) {
+      interfaz.red.firstIp = calculateNextIp(interfaz.red.firstIp);
+      newNet = {...interfaz.red};
+    } else {
+      router.interfaces.push({
+        red: this.selectedNet,
+        nombre: INTERFAZ_BASE_NAME + router.interfaces.length + '/0'
+      });
+      newNet = {...this.selectedNet};
+    }
+    newNet.ipRouter = calculateNextIp(newNet.ipRouter);
+    newRouter.interfaces.push({
+      red: newNet,
+      nombre: INTERFAZ_BASE_NAME + newRouter.interfaces.length + '/0'
     });
 
   }
 
-
-  addRouter(router: Router): void {
-    console.log('Add router', this.selectedNet);
-  }
-
   addNet(router: Router): void {
-    console.log('Add net', this.selectedNet);
+    router.interfaces.push({
+      red: this.selectedNet,
+      nombre: INTERFAZ_BASE_NAME + router.interfaces.length + '/0',
+      disableLinkRouter: true
+    });
   }
 
   selectNet(router: Router, isRouter = false): void {

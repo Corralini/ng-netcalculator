@@ -1,11 +1,11 @@
 <div>
   <ngb-accordion [closeOthers]="true">
-    <ngb-panel *ngFor="let router of routers" id="static-1">
+    <ngb-panel *ngFor="let router of routers">
       <ng-template ngbPanelTitle>
         <span>{{router.nombre}}</span>
       </ng-template>
       <ng-template ngbPanelContent>
-        <div class="d-flex justify-content-end">
+        <div class="d-flex justify-content-end mb-3">
           <button (click)="selectNet(router, true)" class="btn btn-primary mr-3">Add router</button>
           <button (click)="selectNet(router)" class="btn btn-primary">Add net</button>
         </div>
@@ -16,8 +16,16 @@
                 <span>{{interfaz.nombre}}</span>
               </ng-template>
               <ng-template ngbPanelContent>
+                <div class="d-flex justify-content-end mb-3">
+                  <button *ngIf="!interfaz.disableLinkRouter" (click)="addRouter(router, interfaz)" class="btn btn-primary mr-3">Add router</button>
+                </div>
                 <div>
-                  {{interfaz.show}}
+                  <p>IP: {{interfaz.red.ip}}/{{interfaz.red.mask}}</p>
+                  <p>Máscara Decimal: {{interfaz.red.decimalMask}}</p>
+                  <p>Broadcast: {{interfaz.red.broadcast}}</p>
+                  <p>IP router: {{interfaz.red.ipRouter}}</p>
+                  <p>IP Pirmer equipo: {{interfaz.red.firstIp}}</p>
+                  <p>IP Último equipo: {{interfaz.red.lastIp}}</p>
                 </div>
               </ng-template>
             </ngb-panel>
