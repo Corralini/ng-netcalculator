@@ -40,7 +40,7 @@ export class SelectNetModalComponent {
     if (send) {
       if (this.selectNet) {
         this.selectGuessNet.total--;
-        setNetUsed(this.allNet, this.selectNet.ip);
+        setNetUsed(this.allNet, this.selectNet.ip, this.selectNet.mask);
         this.activeModal.close(this.selectNet);
       } else {
         this.snotifyService.create({

@@ -7,7 +7,6 @@ export const typeB = 'B';
 export const typeC = 'C';
 
 let searchNets: Net[] = [];
-let usedNets: Net[] = [];
 
 export function calculateNextIp(ip: string): string {
   const ipSplitted = ip.split('.');
@@ -156,12 +155,10 @@ export function getNetsByMask(net: Net, searchMask: number, first = true): void 
     searchNets = [];
   }
 
-  const used = !!usedNets.find(value => value.ip === net.ip);
-
   if (net.mask !== searchMask) {
     net.childs.forEach(child => getNetsByMask(child, searchMask, false));
   } else {
-    if (!used) {
+    if (!net.used) {
       searchNets.push(net);
     }
   }
@@ -171,25 +168,18 @@ export function getSearchNets(): Net[] {
   return [...searchNets];
 }
 
-export function setNetUsed(net: Net, ip: string, used = true, first = true): void {
-  if (first) {
-    usedNets = [];
-  }
+export function setNetUsed(net: Net, ip: string, mask: number, use = true): void {
 
-  if (used) {
-    if (net.ip !== ip) {
-      net.childs.forEach(child => setNetUsed(child, ip, used, false));
-    } else {
-      usedNets.push(net);
+  if (net.ip !== ip || net.mask !== mask) {
+    net.childs.forEach(child => setNetUsed(child, ip, mask, use));
+    const childUsed = net.childs.filter(child => child.used);
+    if (childUsed && childUsed.length > 0) {
+      net.used = use;
     }
   } else {
-    usedNets = usedNets.filter(value => value.ip !== ip);
+    net.used = use;
+    setAllChildsUsed(net);
   }
-
-}
-
-export function getUsedNets(): Net[] {
-  return [...usedNets];
 }
 
 
@@ -202,3 +192,9 @@ export function getOptimizedMask(numHosts: number): number {
   }
   return 32 - countByteHosts;
 }
+
+export function setAllChildsUsed(net: Net, used = true): void {
+  net.used = used;
+  net.childs.forEach(value => setAllChildsUsed(value, used));
+}
+
