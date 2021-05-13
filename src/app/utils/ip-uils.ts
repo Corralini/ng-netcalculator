@@ -98,8 +98,8 @@ export function generateSubIp(parseIp: string, parseMask: number): Net {
     net.firstIp = calculateNextIp(net.ipRouter);
     net.lastIp = calculatePreviousIp(net.broadcast);
     net.decimalMask = calculateDecimalMask(parseMask);
+    const staticPartIp = parseIp.split('.');
     if (parseMask >= 24) {
-      const staticPartIp = parseIp.split('.');
       const binary = decimalToBinary(parseInt(staticPartIp[3], 10), 8);
       staticPartIp[staticPartIp.length - 1] = binaryToDecimal(binary).toString();
       const firstIp = staticPartIp[0] + '.' + staticPartIp[1] + '.' + staticPartIp[2] + '.' + staticPartIp[3];
@@ -118,11 +118,40 @@ export function generateSubIp(parseIp: string, parseMask: number): Net {
       }
 
     } else if (parseMask >= 16 && parseMask < 24) {
-      const netBytes = parseMask - 16;
-      const binary = ('1'.repeat(netBytes) + '0'.repeat(8 - (netBytes))) + '.' + ('0'.repeat(8));
+      const binary = decimalToBinary(parseInt(staticPartIp[2], 10), 8);
+      staticPartIp[staticPartIp.length - 2] = binaryToDecimal(binary).toString();
+      const firstIp = staticPartIp[0] + '.' + staticPartIp[1] + '.' + staticPartIp[2] + '.' + staticPartIp[3];
+      const firstNet = generateSubIp(firstIp, parseMask + 1);
+      if (firstNet) {
+        net.childs.push(firstNet);
+      }
+
+      const secondBinary = [...binary];
+      secondBinary[parseMask - 16] = '1';
+      staticPartIp[staticPartIp.length - 2] = binaryToDecimal(arrayToString(secondBinary)).toString();
+      const secondIp = staticPartIp[0] + '.' + staticPartIp[1] + '.' + staticPartIp[2] + '.' + staticPartIp[3];
+      const secondNet = generateSubIp(secondIp, parseMask + 1);
+      if (secondNet) {
+        net.childs.push(secondNet);
+      }
+
     } else if (parseMask >= 8 && parseMask < 16) {
-      const netBytes = parseMask - 8;
-      const binary = ('1'.repeat(netBytes) + '0'.repeat(8 - netBytes)) + '.' + ('0'.repeat(8)) + '.' + ('0'.repeat(8));
+      const binary = decimalToBinary(parseInt(staticPartIp[1], 10), 8);
+      staticPartIp[staticPartIp.length - 3] = binaryToDecimal(binary).toString();
+      const firstIp = staticPartIp[0] + '.' + staticPartIp[1] + '.' + staticPartIp[2] + '.' + staticPartIp[3];
+      const firstNet = generateSubIp(firstIp, parseMask + 1);
+      if (firstNet) {
+        net.childs.push(firstNet);
+      }
+
+      const secondBinary = [...binary];
+      secondBinary[parseMask - 8] = '1';
+      staticPartIp[staticPartIp.length - 3] = binaryToDecimal(arrayToString(secondBinary)).toString();
+      const secondIp = staticPartIp[0] + '.' + staticPartIp[1] + '.' + staticPartIp[2] + '.' + staticPartIp[3];
+      const secondNet = generateSubIp(secondIp, parseMask + 1);
+      if (secondNet) {
+        net.childs.push(secondNet);
+      }
     }
     return net;
   }
@@ -140,6 +169,24 @@ export function calculateBroadcast(ip: string, mask: number): string {
     });
     broadcast = ip.split('.')[0] + '.' + ip.split('.')[1] + '.' + ip.split('.')[2] + '.'
       + binaryToDecimal(arrayToString(changePart) + '1'.repeat(8 - changePart.length)).toString();
+  } else if (type === typeB) {
+    let changePart = [...decimalToBinary(parseInt(ip.split('.')[2], 10), 8)];
+    const hostPart = 24 - mask;
+    changePart = changePart.filter((value, index) => {
+      return index < (8 - hostPart);
+    });
+    broadcast = ip.split('.')[0] + '.' + ip.split('.')[1] + '.'
+      + binaryToDecimal(arrayToString(changePart) + '1'.repeat(8 - changePart.length)).toString() + '.'
+      + binaryToDecimal('1'.repeat(8 ).toString());
+  } else if (type === typeA) {
+    let changePart = [...decimalToBinary(parseInt(ip.split('.')[1], 10), 8)];
+    const hostPart = 16 - mask;
+    changePart = changePart.filter((value, index) => {
+      return index < (8 - hostPart);
+    });
+    broadcast = ip.split('.')[0] + '.'
+      + binaryToDecimal(arrayToString(changePart) + '1'.repeat(8 - changePart.length)).toString() + '.'
+      + binaryToDecimal('1'.repeat(8 ).toString()) + '.' + binaryToDecimal('1'.repeat(8 ).toString());
   }
   return broadcast;
 }

@@ -3,7 +3,6 @@ import {Net} from '../../../models/net.model';
 import {GuessNet} from '../../../models/guess-net.model';
 import {Router} from '../../../models/router.model';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {ModalComponent} from '../modal/modal.component';
 import {SelectNetModalComponent} from './select-net-modal/select-net-modal.component';
 import {Interface, INTERFAZ_BASE_NAME} from '../../../models/interfaz.model';
 import {calculateNextIp} from '../../../utils/ip-uils';
@@ -13,7 +12,7 @@ import {calculateNextIp} from '../../../utils/ip-uils';
   templateUrl: './schema.component.html',
   styleUrls: ['./schema.component.css']
 })
-export class SchemaComponent implements OnInit{
+export class SchemaComponent implements OnInit {
 
   @Input() nets: Net;
   @Input() guessNet: GuessNet[];
@@ -24,7 +23,7 @@ export class SchemaComponent implements OnInit{
   selectedNet: Net;
   workGuessNet: GuessNet[];
   workNets: Net;
-
+  usedNets: Net[] = [];
   constructor(private modalService: NgbModal) {
   }
 
@@ -84,13 +83,18 @@ export class SchemaComponent implements OnInit{
   }
 
   selectNet(router: Router, isRouter = false): void {
-    const modalRef = this.modalService.open(SelectNetModalComponent, {backdrop: 'static', keyboard: false, centered: true});
+    const modalRef = this.modalService.open(SelectNetModalComponent, {
+      backdrop: 'static',
+      keyboard: false,
+      centered: true,
+      scrollable: true
+    });
     modalRef.componentInstance.guessNets = this.workGuessNet;
     modalRef.componentInstance.allNet = this.workNets;
     modalRef.result.then(resuult => {
       if (resuult) {
         this.selectedNet = resuult;
-
+        this.usedNets.push(this.selectedNet);
         if (isRouter) {
           this.addRouter(router);
         } else {
