@@ -6,6 +6,8 @@ import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {SelectNetModalComponent} from './select-net-modal/select-net-modal.component';
 import {Interface, INTERFAZ_BASE_NAME} from '../../../models/interfaz.model';
 import {calculateNextIp} from '../../../utils/ip-uils';
+import {RoutingTable} from '../../../models/routing-table.model';
+import {PacketTracerModalComponent} from './packet-tracer-modal/packet-tracer-modal.component';
 
 @Component({
   selector: 'app-schema',
@@ -18,12 +20,12 @@ export class SchemaComponent implements OnInit {
   @Input() guessNet: GuessNet[];
   letras = [...'abcdefghijklmnopkrstuwxyz'];
   idxLetters = 0;
-  idxNet = 1;
   routers: Router[] = [];
   selectedNet: Net;
   workGuessNet: GuessNet[];
   workNets: Net;
   usedNets: Net[] = [];
+
   constructor(private modalService: NgbModal) {
   }
 
@@ -46,7 +48,8 @@ export class SchemaComponent implements OnInit {
   generateRouter(): Router {
     const router: Router = {
       nombre: 'Router ' + this.getLetter().toUpperCase(),
-      interfaces: []
+      interfaces: [],
+      connection: []
     };
     this.routers.push(router);
     return router;
@@ -56,6 +59,7 @@ export class SchemaComponent implements OnInit {
     const newRouter = this.generateRouter();
     this.selectedNet.firstIp = calculateNextIp(this.selectedNet.firstIp);
     let newNet: Net;
+
     if (interfaz) {
       interfaz.red.firstIp = calculateNextIp(interfaz.red.firstIp);
       newNet = {...interfaz.red};
@@ -66,12 +70,15 @@ export class SchemaComponent implements OnInit {
       });
       newNet = {...this.selectedNet};
     }
+
     newNet.ipRouter = calculateNextIp(newNet.ipRouter);
     newRouter.interfaces.push({
       red: newNet,
       nombre: INTERFAZ_BASE_NAME + newRouter.interfaces.length + '/0'
     });
 
+    this.addConection(router, newRouter);
+    this.addConection(newRouter, router);
   }
 
   addNet(router: Router): void {
@@ -80,6 +87,20 @@ export class SchemaComponent implements OnInit {
       nombre: INTERFAZ_BASE_NAME + router.interfaces.length + '/0',
       disableLinkRouter: true
     });
+    this.addConection(router, undefined, this.selectedNet);
+  }
+
+  addConection(router: Router, connectionRouter?: Router, connectionNet?: Net): void {
+    if (connectionRouter) {
+      router.connection.push({
+        router: connectionRouter
+      });
+    }
+    if (connectionNet) {
+      router.connection.push({
+        net: connectionNet
+      });
+    }
   }
 
   selectNet(router: Router, isRouter = false): void {
@@ -103,4 +124,82 @@ export class SchemaComponent implements OnInit {
       }
     });
   }
+
+  openPacketTracerCommand(config: string): void {
+    const modalRef = this.modalService.open(PacketTracerModalComponent, {
+      backdrop: 'static',
+      keyboard: false,
+      centered: true,
+      scrollable: true
+    });
+    modalRef.componentInstance.config = config;
+  }
+
+  generatePacketTracerCommands(router: Router): void {
+    let config = `en \n`;
+    router.interfaces.forEach(value => {
+      config += `conf t \n`;
+      config += `int ${value.nombre} \n`;
+      config += `ip address ${value.red.ipRouter} ${value.red.decimalMask} \n`;
+      config += `no shutdown \n`;
+      config += `exit \n`;
+    });
+
+    const routingTables = this.createRoutingTable(router);
+    routingTables.forEach(value => {
+      config += `ip route ${value.ipDestino} ${value.mask} ${value.puertaEnlace} \n`;
+    });
+    config += `exit \n`;
+    this.openPacketTracerCommand(config);
+  }
+
+  createRoutingTable(router: Router): RoutingTable[] {
+    let usedNets = [...this.usedNets];
+    const routingTable: RoutingTable[] = [];
+    router.interfaces.forEach(interfaz => {
+      usedNets = usedNets.filter(value => value.ip !== interfaz.red.ip);
+    });
+
+    if (usedNets && usedNets.length > 0) {
+      usedNets.forEach(netUsed => {
+        let routersWithNet = this.routers.filter(rout => rout !== router);
+        routersWithNet = routersWithNet.filter(routerSearch => routerSearch.interfaces.filter(routIn => routIn.red.ip === netUsed.ip));
+        let deepCopy = this.routers.filter(value => value !== router);
+        deepCopy = deepCopy.filter(rout => rout.interfaces.find(value => value.red.ip === netUsed.ip));
+        routersWithNet.forEach(rout => {
+          if (!routingTable.find(rt => rt && rt.ipDestino === netUsed.ip)) {
+            routingTable.push(this.createRoutTable(rout, router, netUsed));
+          }
+        });
+
+      });
+    }
+    return routingTable;
+
+  }
+
+  createRoutTable(routerConfig: Router, connectionRouter: Router, redDestino: Net): RoutingTable {
+    let routingTable: RoutingTable;
+    if (routerConfig.connection.find(value => value.router && value.router.nombre === connectionRouter.nombre)) {
+      const interfaces: Interface[] = [];
+      routerConfig.interfaces.forEach(int => {
+        if (connectionRouter.interfaces.find(value => value.red.ip === int.red.ip)) {
+          interfaces.push(int);
+        }
+      });
+      routingTable = {
+        mask: redDestino.decimalMask,
+        puertaEnlace: interfaces[0].red.ipRouter,
+        ipDestino: redDestino.ip
+      };
+    } else {
+      routerConfig.connection.forEach(con => {
+        if (con.router) {
+          routingTable = this.createRoutTable(con.router, connectionRouter, redDestino);
+        }
+      });
+    }
+    return routingTable;
+  }
+
 }

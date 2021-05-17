@@ -8,6 +8,7 @@ import {ReactiveFormsModule} from '@angular/forms';
 import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 import {SchemaComponent} from './net/schema/schema.component';
 import { SelectNetModalComponent } from './net/schema/select-net-modal/select-net-modal.component';
+import { PacketTracerModalComponent } from './net/schema/packet-tracer-modal/packet-tracer-modal.component';
 
 
 @NgModule({
@@ -16,7 +17,8 @@ import { SelectNetModalComponent } from './net/schema/select-net-modal/select-ne
     NetComponent,
     ModalComponent,
     SchemaComponent,
-    SelectNetModalComponent
+    SelectNetModalComponent,
+    PacketTracerModalComponent
   ],
   exports: [
     PublicComponent

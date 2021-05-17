@@ -7,8 +7,10 @@
       <ng-template ngbPanelContent>
         <div class="d-flex justify-content-end mb-3">
           <button (click)="selectNet(router, true)" class="btn btn-primary mr-3">Add router</button>
-          <button (click)="selectNet(router)" class="btn btn-primary">Add net</button>
+          <button (click)="selectNet(router)" class="btn btn-primary mr-3">Add net</button>
+          <button *ngIf="router.connection.length > 0" (click)="generatePacketTracerCommands(router)" class="btn btn-primary">Código Packet Tracer</button>
         </div>
+
         <div>
           <ngb-accordion [closeOthers]="true">
             <ngb-panel *ngFor="let interfaz of router.interfaces">
@@ -17,7 +19,9 @@
               </ng-template>
               <ng-template ngbPanelContent>
                 <div class="d-flex justify-content-end mb-3">
-                  <button *ngIf="!interfaz.disableLinkRouter" (click)="addRouter(router, interfaz)" class="btn btn-primary mr-3">Add router</button>
+                  <button *ngIf="!interfaz.disableLinkRouter" (click)="addRouter(router, interfaz)"
+                          class="btn btn-primary mr-3">Add router
+                  </button>
                 </div>
                 <div>
                   <p>IP: {{interfaz.red.ip}}/{{interfaz.red.mask}}</p>
@@ -31,6 +35,25 @@
             </ngb-panel>
           </ngb-accordion>
         </div>
+
+        <div *ngIf="router.connection.length > 0">
+          <ngb-accordion [closeOthers]="true">
+            <ngb-panel>
+              <ng-template ngbPanelTitle>
+                <span>Conexiones</span>
+              </ng-template>
+              <ng-template ngbPanelContent>
+
+                <div *ngFor="let connection of router.connection">
+                  <div *ngIf="connection.router">
+                    <p>{{connection.router.nombre}}</p>
+                  </div>
+
+                  <div *ngIf="connection.net">
+                    <p>{{connection.net.ip}}/{{connection.net.mask}}</p>
+                  </div>
+
+                </div>
       </ng-template>
     </ngb-panel>
   </ngb-accordion>

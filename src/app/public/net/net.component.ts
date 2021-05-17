@@ -44,11 +44,10 @@ export class NetComponent implements OnInit {
   }
 
   calculateIp(): void {
-    this.numHostsTotales = 0;
-    this.guessNets.forEach(net => this.numHostsTotales += (net.hosts * net.total));
+    this.numHostsTotales = this.calculateHostTotal();
     let countByteHosts = 0;
     let pow = Math.pow(2, countByteHosts) - 2;
-    while (pow <= this.numHostsTotales) {
+    while (pow < this.numHostsTotales) {
       countByteHosts++;
       pow = Math.pow(2, countByteHosts) - 2;
     }
@@ -70,4 +69,17 @@ export class NetComponent implements OnInit {
 
   }
 
+  calculateHostTotal(): number {
+    let hosts = 0;
+    this.guessNets.forEach(value => {
+      let cont = 0;
+      let pow = Math.pow(2, cont) - 2;
+      while (pow < value.hosts) {
+        cont++;
+        pow = Math.pow(2, cont) - 2;
+      }
+      hosts += pow * value.total;
+    });
+    return hosts;
+  }
 }
