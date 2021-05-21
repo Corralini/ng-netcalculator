@@ -63,6 +63,13 @@ export class SchemaComponent implements OnInit {
     if (interfaz) {
       interfaz.red.firstIp = calculateNextIp(interfaz.red.firstIp);
       newNet = {...interfaz.red};
+      this.routers.filter(value => value.nombre !== router.nombre).forEach(rout => {
+        const interfaces = rout.interfaces.filter(int => int.red.ip === interfaz.red.ip);
+        if (interfaces && interfaces.length > 0) {
+          this.addConection(rout, newRouter);
+          this.addConection(newRouter, rout);
+        }
+      });
     } else {
       router.interfaces.push({
         red: this.selectedNet,

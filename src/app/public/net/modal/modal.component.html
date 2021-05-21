@@ -17,6 +17,12 @@
           </label>
         </div>
         <div class="col">
+          <input class="form-check-input" type="checkbox" formControlName="force" id="flexCheckDefault">
+          <label class="form-check-label" for="flexCheckDefault">
+            Sin margen
+          </label>
+        </div>
+        <div class="col">
           <button [disabled]="!netForm.valid" class="btn btn-primary" type="submit">
             <fa-icon [icon]="faPlus"></fa-icon>
           </button>
@@ -33,6 +39,7 @@
     <tr>
       <th scope="col">Nº Redes</th>
       <th scope="col">Nº Hosts</th>
+      <th scope="col">Ajustado</th>
       <th *ngIf="!onlyView" scope="col"></th>
     </tr>
     </thead>
@@ -40,6 +47,8 @@
     <tr *ngFor="let net of guessNets; index as i">
       <td>{{ net.total | number }}</td>
       <td>{{ net.hosts | number }}</td>
+      <td *ngIf="net.adjust"><fa-icon [icon]="faCheck"></fa-icon> </td>
+      <td *ngIf="!net.adjust"><fa-icon [icon]="faCross"></fa-icon> </td>
       <td *ngIf="!onlyView">
         <button (click)="delteNet(i)" class="btn btn-danger">
           <fa-icon [icon]="faTrash"></fa-icon>

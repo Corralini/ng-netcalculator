@@ -31,6 +31,7 @@ export class SelectNetModalComponent {
   selectGuessNet: GuessNet;
   selectNet: Net;
   avaliableNets: Net[];
+  searchText = '';
 
   constructor(private activeModal: NgbActiveModal,
               private snotifyService: SnotifyService) {
@@ -56,7 +57,7 @@ export class SelectNetModalComponent {
 
   setSelectGuessNet(net: GuessNet): void {
     this.selectGuessNet = net;
-    getNetsByMask(this.allNet, getOptimizedMask(this.selectGuessNet.hosts));
+    getNetsByMask(this.allNet, getOptimizedMask(this.selectGuessNet.hosts, this.selectGuessNet.adjust));
     this.avaliableNets = getSearchNets();
   }
 

@@ -4,11 +4,13 @@ import {PublicComponent} from './public.component';
 import {NetComponent} from './net/net.component';
 import {ModalComponent} from './net/modal/modal.component';
 import {NgbAccordionModule, NgbButtonsModule} from '@ng-bootstrap/ng-bootstrap';
-import {ReactiveFormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 import {SchemaComponent} from './net/schema/schema.component';
 import { SelectNetModalComponent } from './net/schema/select-net-modal/select-net-modal.component';
 import { PacketTracerModalComponent } from './net/schema/packet-tracer-modal/packet-tracer-modal.component';
+import {AppModule} from '../app.module';
+import {SearchIpPipe} from '../pipes/search-ip.pipe';
 
 
 @NgModule({
@@ -18,7 +20,8 @@ import { PacketTracerModalComponent } from './net/schema/packet-tracer-modal/pac
     ModalComponent,
     SchemaComponent,
     SelectNetModalComponent,
-    PacketTracerModalComponent
+    PacketTracerModalComponent,
+    SearchIpPipe
   ],
   exports: [
     PublicComponent
@@ -29,6 +32,7 @@ import { PacketTracerModalComponent } from './net/schema/packet-tracer-modal/pac
     ReactiveFormsModule,
     FontAwesomeModule,
     NgbAccordionModule,
+    FormsModule,
   ]
 })
 export class PublicModule {

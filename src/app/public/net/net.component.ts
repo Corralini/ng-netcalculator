@@ -74,9 +74,16 @@ export class NetComponent implements OnInit {
     this.guessNets.forEach(value => {
       let cont = 0;
       let pow = Math.pow(2, cont) - 2;
-      while (pow < value.hosts) {
-        cont++;
-        pow = Math.pow(2, cont) - 2;
+      if (value.adjust) {
+        while (pow < value.hosts) {
+          cont++;
+          pow = Math.pow(2, cont);
+        }
+      } else {
+        while (pow < value.hosts) {
+          cont++;
+          pow = Math.pow(2, cont) - 2;
+        }
       }
       hosts += pow * value.total;
     });

@@ -38,6 +38,11 @@
       Back
     </div>
     <div *ngIf="avaliableNets else noNets">
+      <div>
+        <label>
+          <input class="form-control" [(ngModel)]="searchText" placeholder="Search IP">
+        </label>
+      </div>
 
       <table class="table table-striped">
         <thead>
@@ -48,9 +53,9 @@
         </tr>
         </thead>
         <tbody>
-        <tr *ngFor="let avalNet of avaliableNets">
-          <td>{{ avalNet.ip}}</td>
-          <td>{{ avalNet.decimalMask}}</td>
+        <tr *ngFor="let avalNet of avaliableNets | searchIp: searchText">
+          <td>{{avalNet.ip}}/{{avalNet.mask}}</td>
+          <td>{{avalNet.decimalMask}}</td>
           <td>
             <button (click)="setSelectNet(avalNet)" class="btn btn-success">
               <fa-icon [icon]="faCheck"></fa-icon>

@@ -230,13 +230,21 @@ export function setNetUsed(net: Net, ip: string, mask: number, use = true): void
 }
 
 
-export function getOptimizedMask(numHosts: number): number {
+export function getOptimizedMask(numHosts: number, forceAdjust?: boolean): number {
   let countByteHosts = 0;
   let pow = Math.pow(2, countByteHosts) - 2;
-  while (pow <= numHosts) {
-    countByteHosts++;
-    pow = Math.pow(2, countByteHosts) - 2;
+  if (forceAdjust) {
+    while (pow <= numHosts) {
+      countByteHosts++;
+      pow = Math.pow(2, countByteHosts);
+    }
+  } else {
+    while (pow <= numHosts) {
+      countByteHosts++;
+      pow = Math.pow(2, countByteHosts) - 2;
+    }
   }
+
   return 32 - countByteHosts;
 }
 

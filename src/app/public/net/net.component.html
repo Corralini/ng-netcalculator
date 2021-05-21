@@ -1,6 +1,7 @@
 <div *ngIf="guessNets && guessNets.length > 0">
   <button (click)="getNets(false, true)" class="btn btn-primary">Ver redes</button>
   <button (click)="getNets(true)" class="btn btn-primary">Editar redes</button>
+  <p>IP: {{ipDecimal}}/{{maskDecimal}}</p>
   <br>
   <app-schema *ngIf="show" [guessNet]="guessNets" [nets]="net"></app-schema>
 </div>

@@ -1,7 +1,7 @@
 import {Component, Input} from '@angular/core';
 import {GuessNet} from '../../../models/guess-net.model';
 import {FormBuilder, Validators} from '@angular/forms';
-import {faPlus, faTrash} from '@fortawesome/free-solid-svg-icons';
+import {faCheck, faPlus, faTimes, faTrash} from '@fortawesome/free-solid-svg-icons';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {SnotifyPosition, SnotifyService, SnotifyStyle} from 'ng-snotify';
 import {SnotifyToastConfig} from 'ng-snotify/lib/interfaces/snotify-toast-config.interface';
@@ -15,6 +15,8 @@ export class ModalComponent {
 
   faPlus = faPlus;
   faTrash = faTrash;
+  faCheck = faCheck;
+  faCross = faTimes;
 
   snotifyConfig: SnotifyToastConfig = {
     timeout: 2000,
@@ -32,7 +34,8 @@ export class ModalComponent {
 
   netForm = this.formBuilder.group({
     numHosts: ['', Validators.required],
-    numRed: ['', Validators.required]
+    numRed: ['', Validators.required],
+    force: false
   });
 
   constructor(private formBuilder: FormBuilder,
@@ -45,7 +48,8 @@ export class ModalComponent {
     if (this.netForm.valid) {
       this.addNet({
         hosts: this.netForm.get('numHosts').value,
-        total: this.netForm.get('numRed').value
+        total: this.netForm.get('numRed').value,
+        adjust: this.netForm.get('force').value
       });
     }
   }
