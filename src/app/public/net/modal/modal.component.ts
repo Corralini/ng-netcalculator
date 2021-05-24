@@ -56,7 +56,7 @@ export class ModalComponent {
 
   addNet(net: GuessNet): void {
     if (net) {
-      const serchNet = this.guessNets.find(value => value.hosts === net.hosts);
+      const serchNet = this.guessNets.find(value => value.hosts === net.hosts && value.adjust === net.adjust);
       if (serchNet) {
         serchNet.total += net.total;
       } else {

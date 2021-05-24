@@ -63,6 +63,7 @@ export class SchemaComponent implements OnInit {
     if (interfaz) {
       interfaz.red.firstIp = calculateNextIp(interfaz.red.firstIp);
       newNet = {...interfaz.red};
+      newNet.ipRouter = calculateNextIp(newNet.ipRouter);
       this.routers.filter(value => value.nombre !== router.nombre).forEach(rout => {
         const interfaces = rout.interfaces.filter(int => int.red.ip === interfaz.red.ip);
         if (interfaces && interfaces.length > 0) {
@@ -170,9 +171,8 @@ export class SchemaComponent implements OnInit {
     if (usedNets && usedNets.length > 0) {
       usedNets.forEach(netUsed => {
         let routersWithNet = this.routers.filter(rout => rout !== router);
-        routersWithNet = routersWithNet.filter(routerSearch => routerSearch.interfaces.filter(routIn => routIn.red.ip === netUsed.ip));
-        let deepCopy = this.routers.filter(value => value !== router);
-        deepCopy = deepCopy.filter(rout => rout.interfaces.find(value => value.red.ip === netUsed.ip));
+        routersWithNet = routersWithNet.filter(routerSearch =>
+          routerSearch.interfaces.filter(routIn => routIn.red.ip === netUsed.ip).length > 0);
         routersWithNet.forEach(rout => {
           if (!routingTable.find(rt => rt && rt.ipDestino === netUsed.ip)) {
             routingTable.push(this.createRoutTable(rout, router, netUsed));
